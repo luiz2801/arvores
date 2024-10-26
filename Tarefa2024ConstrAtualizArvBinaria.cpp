@@ -1,33 +1,3 @@
-/* 
-
-TRABALHO
-ENVIAR ATÉ 28/10/2024 
-
-O programa já contém uma função (mostrada na aula) para criar uma árvore completa:
--  os elementos são fornecidos em pré-ordem
-- quando não há mais filhos, à esquerda ou à direita, deve-se fornecer o caractere que simboliza NULL ( "/" )  para indicar isso.
-
-A tarefa á:
-Completar o programa (percurso ordem central, pós-ordem, etc.) 
-Criar funções adicionais (inserindo no menu do programa):
-
-- Inserção de um valor "val"  em um filho à esquerda de determinado nó (com determinado conteúdo) 
-
-- Inserção de um valor "val"  em um filho à direita de determinado nó (com determinado conteúdo) 
-(são funções de retorno do tipo bool - se a tarefa foi realizada ou é impossível)
-
-- Fornecer a soma dos elementos 
-- Multiplicar todos os elementos por um certo valor.
-
-Obs: decompor o problema, conforme discutido em sala: uma função que retorne o 
-ponteiro para o nó em questão (ou NULL se ele não existir)
-
-Sugestão: quando forem testar, desenhem em papel a árvore. Criem a árvore e explorem as opções inserir a esquerda (ou a direita) de determinado nó - acompanhem se a evolução da árvore está correta com as funções de percurso que exibem os nós em pré-ordem, pós-ordem ou central. 
-
-*/
-
-
-
 #include <iostream>
 using namespace std;
  
@@ -43,11 +13,11 @@ struct NoArvBin
 
 typedef NoArvBin * ptNo;      // Tipo ptNo - definição de ponteiros para nós de uma árvore
 
-void construir_arvore(ptNo & p ) {
+void construirArvore(ptNo & p ) {
    tDado x;   
    
-   cin >> x;
-   if (x == '/') {        // não construir nó - não há subárvore naquele ponto
+   std::cin >> x;
+   if (x == 0) {        // não construir nó - não há subárvore naquele ponto
       p = NULL;
       return;
    }
@@ -55,17 +25,17 @@ void construir_arvore(ptNo & p ) {
    p = new NoArvBin;
    p->dado = x;
   
-   cout << "Ins. à esquerda de " << p->dado << ". " << endl;
-   construir_arvore(p->esq );
-   cout << "Ins. à direita de " << p->dado << ". " << endl;   
-   construir_arvore(p->dir);
+   std::cout << "Ins. à esquerda de " << p->dado << ". " << endl;
+   construirArvore(p->esq );
+   std::cout << "Ins. à direita de " << p->dado << ". " << endl;   
+   construirArvore(p->dir);
 }   
    
 
 
 void visitar (ptNo p)
 {
-   cout << p->dado << "  ";
+   std::cout << p->dado << "  ";
 }
 
 void percorrer_pre_ordem(ptNo p )
@@ -78,44 +48,81 @@ void percorrer_pre_ordem(ptNo p )
       }
 }
 
+void percorrer_pos_ordem(ptNo p )
+{
+      if (p!= NULL)
+      {
+            percorrer_pos_ordem(p->esq );
+            percorrer_pos_ordem(p->dir );
+            visitar(p);
+      }
+}
+
+void percorrer_central_ordem(ptNo p )
+{
+      if (p!= NULL)
+      {
+            percorrer_central_ordem(p->esq );
+            visitar(p);
+            percorrer_central_ordem(p->dir );
+      }
+}
 
 
 // função já desenvolvida na última aula
 ptNo localizaNo(ptNo p, tDado val)
 {
-     ptNo buscaEsq;     
+     ptNo busca;
 
      if (p == NULL)    //  não há elementos a procurar
          return NULL;
+
      if (p->dado == val)    // elemento encontrado
           return p;
-      // tentativa na subárvore da esquerda - é retornado, se a busca teve sucesso
-      buscaEsq = localizaNo(p->esq, val);
-      if (buscaEsq != NULL)
-           return buscaEsq;
-      // tentativa na subárvore da direita - é retornado, com sucesso ou não
-      return localizaNo(p->dir, val);
+
+     // tentativa na subárvore da esquerda - é retornado, se a busca teve sucesso
+     busca = localizaNo(p->esq, val);
+     if (busca != NULL)
+          return busca;
+     // tentativa na subárvore da direita - é retornado, com sucesso ou não
+     return localizaNo(p->dir, val);
 }
+
 // inserir nó a direita de um já existente com certo conteúdo guardando o valor recebido 
 // retornar true ou false caso tenha sido possível ou não a inserção
 bool insereDireita(ptNo p, tDado contNo, tDado contNovoNo)
 {
-    ptNo loc = localizaNo(ptNo p, tDado contNo); // verifica se nó está presente na árvore
-    if loc == NULL || loc->dir != NULL{
-        return false; } // retorna falso se não tem nó ou se a direita n estivre livre
+     ptNo localizacao = localizaNo(p, contNo); // verifica se nó está presente na árvore
+     if (localizacao == NULL || localizacao->dir != NULL)
+          return false;
+          // retorna falso se não tem nó ou se a direita não estiver livre
 
-    ptNo newArrow = (ptNo*)malloc(sizeoff(ptNo)); // ponteiro novo para receber o dado a ser adicionado
-    newArrow -> dado = contNovoNo; // atribui valor indicado pelo ponteiro o dado passado como parâmetro 
-    contNovoNo -> esq, contNovoNo -> dir = NULL;
-    return true    
+     // ponteiro novo para receber o dado a ser adicionado
+     ptNo novoPonteiro = (NoArvBin*) malloc(sizeof(ptNo));
+     localizacao->dir = novoPonteiro;
+     // atribui valor indicado pelo ponteiro o dado passado como parâmetro
+     novoPonteiro->dado = contNovoNo;
+     novoPonteiro->esq = novoPonteiro->dir = NULL;
+     return true;
 }
 
     
 
 bool insereEsquerda(ptNo p, tDado contNo, tDado contNovoNo)
 {
-    
- } 
+     ptNo localizacao = localizaNo(p, contNo); // verifica se nó está presente na árvore
+     if (localizacao == NULL || localizacao->esq != NULL)
+          // retorna falso se não tem nó ou se a direita não estiver livre
+          return false;
+
+     // ponteiro novo para receber o dado a ser adicionado
+     ptNo novoPonteiro = (NoArvBin*) malloc(sizeof(ptNo));
+     localizacao->esq = novoPonteiro;
+     // atribui valor indicado pelo ponteiro o dado passado como parâmetro
+     novoPonteiro->dado = contNovoNo;
+     novoPonteiro->esq = novoPonteiro->dir = NULL;
+     return true;
+} 
 
 
 void liberarArvore(ptNo &p)
@@ -124,7 +131,7 @@ void liberarArvore(ptNo &p)
      {
          liberarArvore(p->esq);    // libera toda a subárvore da esquerda
          liberarArvore(p->dir);    // libera toda a subárvore da direita
-         cout << "Liberando nó contendo o elemento " << p->dado << endl;         
+         std::cout << "Liberando nó contendo o elemento " << p->dado << endl;         
          delete p;
          p = NULL;
      }        
@@ -132,14 +139,14 @@ void liberarArvore(ptNo &p)
 
 void  exibirMenu( )
 {
-      cout << "1 -  Construir a árvore" << endl;
-      cout << "2 -  Inserir a esquerda de nó"  << endl;
-      cout << "3 -  Inserir a direita de nó"  << endl;
-      cout << "4 -  Mostrar a árvore em pré-ordem"  << endl;
-      cout << "5 -  Mostrar a árvore em pós-ordem"  << endl;
-      cout << "6 -  Mostrar a árvore em ordem central"  << endl;
-      cout << "7 -  Encerrar programa"  << endl << endl;
-      cout << "Escolha uma opção:  " ;
+     std::cout << "1 -  Construir a árvore" << endl;
+     std::cout << "2 -  Inserir a esquerda de nó"  << endl;
+     std::cout << "3 -  Inserir a direita de nó"  << endl;
+     std::cout << "4 -  Mostrar a árvore em pré-ordem"  << endl;
+     std::cout << "5 -  Mostrar a árvore em pós-ordem"  << endl;
+     std::cout << "6 -  Mostrar a árvore em ordem central"  << endl;
+     std::cout << "7 -  Encerrar programa"  << endl << endl;
+     std::cout << "Escolha uma opção:  " ;
 }
 
 int main ()
@@ -155,33 +162,33 @@ int main ()
        switch (opc)
        {
             case 1:
-                 construir_arvore(p);
+                 construirArvore(p);
                  break;
             case 2:
-                 cout << "Forneca o conteúdo do nó de referência: ";
-                 cin >> contNo;
-                 cout << "Forneca o conteúdo do novo nó: ";
-                 cin >> contNovoNo;
+                 std::cout << "Forneca o conteúdo do nó de referência: ";
+                 std::cin >> contNo;
+                 std::cout << "Forneca o conteúdo do novo nó: ";
+                 std::cin >> contNovoNo;
                  insereEsquerda(p, contNo, contNovoNo);
                  break;
             case 3:
-                 cout << "Forneca o conteúdo do nó de referência: ";
-                 cin >> contNo;
-                 cout << "Forneca o conteúdo do novo nó: ";
-                 cin >> contNovoNo;
+                 std::cout << "Forneca o conteúdo do nó de referência: ";
+                 std::cin >> contNo;
+                 std::cout << "Forneca o conteúdo do novo nó: ";
+                 std::cin >> contNovoNo;
                  insereDireita(p, contNo, contNovoNo);
                  break;
             case 4:
                  percorrer_pre_ordem(p);
-                 cout << endl;
+                 std::cout << endl;
                  break;
             case 5:
                  percorrer_pos_ordem(p);
-                 cout << endl;
+                 std::cout << endl;
                  break;
             case 6:
-                 percorrer_ordem_central(p);
-                 cout << endl;
+                 percorrer_central_ordem(p);
+                 std::cout << endl;
                  break;
             case 7:
                  fimProg = true;
