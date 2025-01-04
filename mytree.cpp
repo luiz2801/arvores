@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h>
 using namespace std;
 
 
@@ -75,28 +76,66 @@ ptNo exists(ptNo p, int x){
 
 
 int maxValue(ptNo &p){
-    int x;
-    if (p -> dado > x){
-        x = p -> dado;
-    }
     if (p == NULL){
         return;
     }
+    int x = std::numeric_limits<int>::min();
+    if (p -> dado > x){
+        x = p -> dado;
+    }
+
     maxValue(p -> esq);
     maxValue(p -> dir);
     return x;
 }
 
 int minValue(ptNo &p){
-    int x;
-    if (p -> dado < x){
-        x = p -> dado;
-    }
     if (p == NULL){
         return;
     }
+    int x = std::numeric_limits<int>::max();
+    if (p -> dado > x){
+        x = p -> dado;
+    }
+
     minValue(p -> esq);
     minValue(p -> dir);
     return x;
 }
 
+void addL(ptNo &p, int x, int y) //p = raiz, x = valor novo e y = valor buscado
+{
+    ptNo q = exists(p, y);
+    if (q == NULL || q -> esq != NULL)
+    {
+        return;
+    }
+    ptNo s = new noArv;
+    s -> dado = x;
+    q -> esq = s;
+    s -> esq = s -> dir = NULL;
+}
+
+void addR(ptNo &p, int x, int y) //p = raiz, x = valor novo e y = valor buscado
+{
+    ptNo q = exists(p, y);
+    if (q == NULL || q -> dir != NULL)
+    {
+        return;
+    }
+    ptNo s = new noArv;
+    s -> dado = x;
+    q -> dir = s;
+    s -> esq = s -> dir = NULL;
+}
+
+
+int sum(ptNo p)
+{
+    int x = 0;
+    int x = x + p -> dado;
+    sum(p -> esq);
+    sum(p -> dir);
+    cout <<x;
+    return x;
+}
